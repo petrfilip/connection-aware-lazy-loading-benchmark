@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lazy Loading With Intersection Observer  API and Connection Awareness </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="../resources/css/styles.css"/>
+</head>
+
+<body>
+
+<section id="gallery-wrapper">
+    <div class="image-wrapper">
+        <img class="js-img" data-src="../resources/desktop/1.jpg" alt="First image"/>
+    </div>
+    <div class="image-wrapper">
+        <img class="js-img" data-src="../resources/desktop/2.jpg" alt="First image"/>
+    </div>
+    <div class="image-wrapper">
+        <img class="js-img" data-src="../resources/desktop/3.jpg" alt="First image"/>
+    </div>
+    <div class="image-wrapper">
+        <img class="js-img" data-src="../resources/desktop/4.jpg" alt="First image"/>
+    </div>
+    <div class="image-wrapper">
+        <img class="js-img" data-src="../resources/desktop/5.jpg" alt="First image"/>
+    </div>
+    <div class="image-wrapper">
+        <img class="js-img" data-src="../resources/desktop/6.jpg" alt="First image"/>
+    </div>
+    <div class="image-wrapper">
+        <img class="js-img" data-src="../resources/desktop/7.jpg" alt="First image"/>
+    </div>
+    <div class="image-wrapper">
+        <img class="js-img" data-src="../resources/desktop/8.jpg" alt="First image"/>
+    </div>
+    <div class="image-wrapper">
+        <img class="js-img" data-src="../resources/desktop/9.jpg" alt="First image"/>
+    </div>
+</section>
+
+<script>
+
+    var firedEvents = 0;
+    var images = document.querySelectorAll("#gallery-wrapper img[data-src]");
+
+    var config = {
+        rootMargin: '0px 0px',
+        threshold: 0.01
+    };
+    var observer = new IntersectionObserver(observeImages, config);
+    images.forEach(function (element) {
+        observer.observe(element)
+    });
+
+    function observeImages(entries) {
+        firedEvents++;
+        entries.forEach(function (entry) {
+            if (entry.intersectionRatio > 0) {
+                observer.unobserve(entry.target);
+                handleImage(entry.target);
+                console.log("Fired events until image loaded: " + firedEvents);
+            }
+        })
+    }
+
+    function getMediaByEcp(pathToResource) {
+        var targetMediaQualityVersion = getTargetMediaQualityVersion();
+        return pathToResource.replace("desktop", targetMediaQualityVersion);
+    }
+
+    function handleImage(item) {
+        var pathToImage = getMediaByEcp(item.getAttribute("data-src"));
+        item.setAttribute("src", pathToImage);
+        item.removeAttribute("data-src");
+
+    }
+
+    function getEffectiveConnectionType() {
+        var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        return connection.effectiveType;
+    }
+
+    function getTargetMediaQualityVersion() {
+        var ect = getEffectiveConnectionType();
+        console.log(ect);
+        var targetMediaQualityVersion = "desktop";
+
+        switch (ect) {
+            case "slow-2g":
+                targetMediaQualityVersion = "icon";
+                break;
+            case "2g":
+                targetMediaQualityVersion = "mobile";
+                break;
+            case "3g":
+                targetMediaQualityVersion = "tablet";
+                break;
+            case "4g":
+                targetMediaQualityVersion = "desktop";
+                break;
+            default:
+                targetMediaQualityVersion = "desktop";
+        }
+        return targetMediaQualityVersion;
+    }
+</script>
+
+<script type="text/javascript" src="../resources/js/performance-tracker.js" charset="utf-8"></script>
+
+
+</body>
+</html>

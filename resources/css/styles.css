@@ -1,0 +1,16 @@
+#gallery-wrapper {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.image-wrapper {
+    width: 100%; /* Or whatever */
+    min-height: 1000px; /* Or whatever */
+    margin-bottom: 5px;
+    padding: 10px;
+    border: 1px solid gray;
+}
+
+img {
+    width: 100%;
+}
